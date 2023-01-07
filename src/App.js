@@ -1,5 +1,5 @@
 import React from "react";
-// import { useRef } from "react";
+
 import { useState } from "react";
 import TaskList from "./TaskList";
 import NewTask from "./NewTask";
@@ -11,40 +11,39 @@ import {
   AppBar,
   Toolbar,
   Typography,
-  Container,
   Divider,
 } from "@mui/material";
 
 import { pink } from "@mui/material/colors";
 
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 
 function App() {
-  // const input = useRef();
   let [items, setItems] = useState([
     { id: 1, subject: "Bread", done: false },
     { id: 2, subject: "Butter", done: true },
     { id: 3, subject: "Egg", done: true },
   ]);
 
+  const get = (id) => {
+    return items.filter((item) => item.id === parseInt(id))[0];
+  };
+
   const add = (subject) => {
     setItems([{ id: items.length + 1, subject, done: false }, ...items]);
   };
 
-  // const add = (subject) => {
-  //   try {
-  //     if (subject.trim() === "") {
-  //       throw new Error("Task subject cannot be empty");
-  //     }
-
-  //     setItems([{ id: items.length + 1, subject, done: false }, ...items]);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
-
   const remove = (id) => {
     setItems(items.filter((item) => item.id !== id));
+  };
+
+  const update = (id, subject) => {
+    setItems(
+      items.map((item) => {
+        if (item.id === parseInt(id)) item.subject = subject;
+        return item;
+      })
+    );
   };
 
   const toggle = (id) => {
@@ -57,7 +56,7 @@ function App() {
   };
 
   const clear = () => {
-    setItems(items.filter((item) => item.done));
+    setItems(items.filter((item) => !item.done));
   };
 
   return (
@@ -75,31 +74,29 @@ function App() {
         </AppBar>
       </Box>
 
-      <Router>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <Container maxWidth="sm" sx={{ mt: 4 }}>
-                <NewTask add={add} />
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <Box sx={{ mt: 4, px: { lg: "280px", md: "50px", sm: "10px" } }}>
+              <NewTask add={add} />
 
-                <TaskList
-                  items={items.filter((item) => !item.done)}
-                  remove={remove}
-                  toggle={toggle}
-                />
-
-                <TaskList
-                  items={items.filter((item) => item.done)}
-                  remove={remove}
-                  toggle={toggle}
-                />
-              </Container>
-            }
-          />
-          <Route path="/edit/:id" element={<Edit />} />
-        </Routes>
-      </Router>
+              <TaskList
+                items={items.filter((item) => !item.done)}
+                remove={remove}
+                toggle={toggle}
+              />
+              <Divider />
+              <TaskList
+                items={items.filter((item) => item.done)}
+                remove={remove}
+                toggle={toggle}
+              />
+            </Box>
+          }
+        />
+        <Route path="/edit/:id" element={<Edit get={get} update={update} />} />
+      </Routes>
     </Box>
   );
 }

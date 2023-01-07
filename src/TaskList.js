@@ -1,16 +1,10 @@
-import {
-  Box,
-  Icon,
-  ListItemText,
-  ListItem,
-  IconButton,
-  List,
-} from "@mui/material";
+import { Box, ListItemText, ListItem, IconButton, List } from "@mui/material";
 
 import {
   Undo as UndoIcon,
   Check as CheckIcon,
   Delete as DeleteIcon,
+  Edit as EditIcon,
 } from "@mui/icons-material";
 
 import { pink, green } from "@mui/material/colors";
@@ -39,7 +33,9 @@ export default function TaskList({ items, remove, toggle }) {
                 {" "}
                 {item.subject}
               </ListItemText>
-              <Link></Link>
+              <Link to={`/edit/${item.id}`}>
+                <EditIcon sx={{ color: "grey", mr: 2 }} />
+              </Link>
               <IconButton onClick={() => remove(item.id)}>
                 <DeleteIcon sx={{ color: pink[500] }} />
               </IconButton>
