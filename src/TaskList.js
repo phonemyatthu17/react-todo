@@ -27,7 +27,7 @@ export default function TaskList({ items, remove, toggle }) {
               <ListItemText
                 sx={{
                   ml: 3,
-                  color: item.done ? "grey" : "black",
+                  color: item.done ? "text.fade" : "text.light",
                 }}
               >
                 {" "}

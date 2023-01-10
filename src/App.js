@@ -1,24 +1,34 @@
 import React from "react";
-
-import { useState } from "react";
-import TaskList from "./TaskList";
-import NewTask from "./NewTask";
-import Edit from "./Edit";
-
+import { useState, createContext } from "react";
 import {
   Box,
   Button,
   AppBar,
   Toolbar,
-  Typography,
   Divider,
+  useTheme,
+  IconButton,
 } from "@mui/material";
-
 import { pink } from "@mui/material/colors";
-
 import { Routes, Route } from "react-router-dom";
+import { useContext } from "react";
+import { ModelContext } from "./ThemeApp";
+
+import {
+  LightMode as LightModeIcon,
+  DarkMode as DarkModeIcon,
+} from "@mui/icons-material";
+
+import TaskList from "./TaskList";
+import NewTask from "./NewTask";
+import Edit from "./Edit";
+import Title from "./Title";
+
+export const CountContext = createContext(0);
 
 function App() {
+  const theme = useTheme();
+
   let [items, setItems] = useState([
     { id: 1, subject: "Bread", done: false },
     { id: 2, subject: "Butter", done: true },
@@ -59,45 +69,68 @@ function App() {
     setItems(items.filter((item) => !item.done));
   };
 
+  const changeMode = useContext(ModelContext);
+
   return (
-    <Box>
-      <Box sx={{ flexGrow: 1 }}>
-        <AppBar position="static" sx={{ bgcolor: pink[500] }}>
-          <Toolbar>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              Todo App
-            </Typography>
-            <Button onClick={clear} color="inherit">
-              Clear
-            </Button>
-          </Toolbar>
-        </AppBar>
+    <CountContext.Provider value={items.length}>
+      <Box>
+        <Box sx={{ flexGrow: 1 }}>
+          <AppBar position="static" sx={{ bgcolor: pink[500] }}>
+            <Toolbar>
+              <Title />
+              <Button onClick={clear} color="inherit">
+                Clear
+              </Button>
+
+              {theme.palette.mode === "dark" ? (
+                <IconButton
+                  onClick={() => {
+                    changeMode();
+                  }}
+                >
+                  <LightModeIcon />
+                </IconButton>
+              ) : (
+                <IconButton
+                  onClick={() => {
+                    changeMode();
+                  }}
+                >
+                  <DarkModeIcon />
+                </IconButton>
+              )}
+            </Toolbar>
+          </AppBar>
+        </Box>
+
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <Box sx={{ mt: 4, px: { lg: "280px", md: "50px", sm: "10px" } }}>
+                <NewTask add={add} />
+
+                <TaskList
+                  items={items.filter((item) => !item.done)}
+                  remove={remove}
+                  toggle={toggle}
+                />
+                <Divider />
+                <TaskList
+                  items={items.filter((item) => item.done)}
+                  remove={remove}
+                  toggle={toggle}
+                />
+              </Box>
+            }
+          />
+          <Route
+            path="/edit/:id"
+            element={<Edit get={get} update={update} />}
+          />
+        </Routes>
       </Box>
-
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <Box sx={{ mt: 4, px: { lg: "280px", md: "50px", sm: "10px" } }}>
-              <NewTask add={add} />
-
-              <TaskList
-                items={items.filter((item) => !item.done)}
-                remove={remove}
-                toggle={toggle}
-              />
-              <Divider />
-              <TaskList
-                items={items.filter((item) => item.done)}
-                remove={remove}
-                toggle={toggle}
-              />
-            </Box>
-          }
-        />
-        <Route path="/edit/:id" element={<Edit get={get} update={update} />} />
-      </Routes>
-    </Box>
+    </CountContext.Provider>
   );
 }
 

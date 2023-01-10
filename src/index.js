@@ -4,12 +4,16 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter as Router } from "react-router-dom";
-import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
-import { dark } from "@mui/material/styles/createPalette";
+import { createTheme, CssBaseline } from "@mui/material";
+import ThemeApp from "./ThemeApp";
 
 const theme = createTheme({
   palette: {
-    mode: "light",
+    mode: "dark",
+    text: {
+      fade: "#888",
+      light: "#fff",
+    },
   },
 });
 
@@ -17,10 +21,10 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <Router>
-      <ThemeProvider theme={theme}>
+      <ThemeApp theme={theme}>
         <CssBaseline />
         <App />
-      </ThemeProvider>
+      </ThemeApp>
     </Router>
   </React.StrictMode>
 );
